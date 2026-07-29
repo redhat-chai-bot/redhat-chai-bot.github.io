@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chai Bot User Guide — External</title>
+  <style>
+    :root {
+      --bg: #f8fafb;
+      --surface: #ffffff;
+      --text: #1a2332;
+      --text-muted: #4a5568;
+      --accent: #1a5c6a;
+      --accent-light: #e6f4f7;
+      --accent-hover: #134a55;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+      --hero-bg: #0b0d12;
+      --hero-text: #e8edf5;
+      --hero-accent: #7dd3fc;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 2rem; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Oxygen, Ubuntu, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* Hero */
+    .hero {
+      background: var(--hero-bg);
+      color: var(--hero-text);
+      padding: 3rem 2rem 2.5rem;
+      text-align: center;
+    }
+    .hero-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .hero-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+      border: 2px solid rgba(125, 211, 252, 0.4);
+    }
+    .hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .hero p {
+      color: #a7b3c5;
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .hero-nav {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .hero-nav a {
+      color: var(--hero-accent);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 0.4rem 1rem;
+      border: 1px solid rgba(125, 211, 252, 0.3);
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+    .hero-nav a:hover {
+      background: rgba(125, 211, 252, 0.1);
+      border-color: rgba(125, 211, 252, 0.6);
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      max-width: 1100px;
+      margin: 0 auto;
+      gap: 2rem;
+      padding: 2rem;
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    /* Sidebar / TOC */
+    .sidebar {
+      position: sticky;
+      top: 2rem;
+      align-self: start;
+      max-height: calc(100vh - 4rem);
+      overflow-y: auto;
+      padding-right: 1rem;
+    }
+    .toc-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+    .toc a {
+      display: block;
+      padding: 0.3rem 0 0.3rem 0.75rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .toc a:hover, .toc a.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+    }
+    .toc a.sub {
+      padding-left: 1.5rem;
+      font-size: 0.8rem;
+    }
+
+    /* Content */
+    .content {
+      min-width: 0;
+    }
+    .content section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .content h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent-light);
+    }
+    .content h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .content h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 1.2rem;
+      margin-bottom: 0.4rem;
+    }
+    .content p {
+      margin-bottom: 0.85rem;
+      color: var(--text);
+    }
+    .content ul, .content ol {
+      margin: 0.5rem 0 1rem 1.5rem;
+    }
+    .content li {
+      margin-bottom: 0.4rem;
+    }
+    .content li strong {
+      color: var(--accent-hover);
+    }
+
+    /* Code */
+    code {
+      font-family: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, monospace;
+      background: var(--code-bg);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+      color: var(--accent-hover);
+    }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      overflow-x: auto;
+      margin: 0.75rem 0 1rem;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.92rem;
+    }
+    th, td {
+      padding: 0.65rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--accent-light);
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    tr:hover td { background: #f8fbfc; }
+
+    /* Images */
+    .diagram {
+      display: block;
+      max-width: 100%;
+      margin: 1.5rem auto;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Callouts */
+    .callout {
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      font-size: 0.92rem;
+    }
+    .callout-warning {
+      background: #fef9e7;
+      border-left: 4px solid #f0b429;
+      color: #7c5e10;
+    }
+    .callout-info {
+      background: var(--accent-light);
+      border-left: 4px solid var(--accent);
+      color: var(--accent-hover);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* Mobile TOC toggle */
+    .mobile-toc-btn {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
+      align-items: center;
+      justify-content: center;
+    }
+    @media (max-width: 900px) {
+      .mobile-toc-btn { display: flex; }
+    }
+    .mobile-toc-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(0,0,0,0.5);
+    }
+    .mobile-toc-overlay.active { display: block; }
+    .mobile-toc-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1001;
+      background: var(--surface);
+      border-radius: 16px 16px 0 0;
+      padding: 1.5rem;
+      max-height: 70vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+    .mobile-toc-panel.active { transform: translateY(0); }
+    .mobile-toc-panel .toc a {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <img src="assets/chai-avatar.png" alt="Chai Bot" class="hero-avatar">
+    <h1>Chai Bot User Guide</h1>
+    <p>Your AI assistant for finding answers, exploring knowledge, and learning from your team — all from Slack.</p>
+    <nav class="hero-nav">
+      <a href="#what-is-chai-bot">Overview</a>
+      <a href="#getting-started">Getting Started</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#feedback">Feedback &amp; Learning</a>
+      <a href="#privacy">Privacy</a>
+    </nav>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="toc-title">On this page</div>
+    <nav class="toc">
+      <a href="#what-is-chai-bot">What Is Chai Bot?</a>
+      <a href="#personas" class="sub">Personas</a>
+      <a href="#getting-started">Getting Started</a>
+      <a href="#opt-in" class="sub">Opt In</a>
+      <a href="#ask-question" class="sub">Ask a Question</a>
+      <a href="#chat-dm" class="sub">Chat (DM)</a>
+      <a href="#thinking-effort" class="sub">Thinking Effort</a>
+      <a href="#try-it-out">Try It Out</a>
+      <a href="#capabilities">What Can It Do?</a>
+      <a href="#feedback">Feedback &amp; Teaching</a>
+      <a href="#verified-knowledge" class="sub">Verified Knowledge</a>
+      <a href="#knowledge-sources">Knowledge Sources</a>
+      <a href="#where-available">Where Is It Available?</a>
+      <a href="#privacy">Privacy &amp; Data</a>
+      <a href="#limitations">Limitations</a>
+      <a href="#support">Contact &amp; Support</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+
+    <!-- What Is Chai Bot -->
+    <section id="what-is-chai-bot">
+      <h2>What Is Chai Bot?</h2>
+      <p>Chai Bot (<strong>CH</strong>annel <strong>AI</strong>) is an AI assistant that lives in your Slack channels. It helps you find answers, look things up, and learn from your team's collective knowledge — all without leaving the conversation.</p>
+      <p>Here's what makes it useful:</p>
+      <ul>
+        <li><strong>Knowledge.</strong> The bot can search through your team's Slack conversations, documentation, runbooks, and indexed content to find relevant answers.</li>
+        <li><strong>Live lookups.</strong> The bot can check live systems and bring back current information when relevant to your question.</li>
+        <li><strong>Grounded answers.</strong> Responses are based on your team's actual content — not generic AI responses. The bot cites its sources so you can verify.</li>
+        <li><strong>Feedback.</strong> Your feedback helps track trends and identify areas for improvement, keeping the bot's quality on an upward trajectory.</li>
+      </ul>
+
+      <img src="assets/how-it-works.png" alt="Diagram showing how Chai Bot works — a question flows through knowledge sources to produce a grounded answer" class="diagram">
+
+      <h3 id="personas">Personas: Team-Adapted Agents</h3>
+      <p>When you interact with Chai Bot — whether in a channel or the Chat tab — you are talking to a specific <em>persona</em>. A persona is a complete agent profile built for a particular area. Each persona combines curated knowledge, specialized behavior, and response style tailored to a specific domain.</p>
+      <ul>
+        <li><strong>Knowledge scope</strong> — the docs, history, and context the persona can draw from.</li>
+        <li><strong>Behavior scope</strong> — domain-specific instructions, priorities, and communication style.</li>
+      </ul>
+      <p>This means you get purpose-built assistants that stay accurate in their area of expertise, rather than one generic assistant that tries to cover everything.</p>
+    </section>
+
+    <!-- Getting Started -->
+    <section id="getting-started">
+      <h2>Getting Started</h2>
+
+      <h3 id="opt-in">Opt In</h3>
+      <p>Before the bot will process your messages, you need to give consent:</p>
+      <pre><code>@chai-bot /consent</code></pre>
+      <p>This is a one-time step. Until you consent, your messages are ignored — even in threads where the bot is active.</p>
+
+      <h3 id="ask-question">Ask a Question</h3>
+      <p>Mention the bot in a Slack thread with your question:</p>
+      <pre><code>@chai-bot What is the process for creating an advisory?</code></pre>
+      <p>The bot will search the available knowledge bases, check live systems if relevant, and respond in the thread.</p>
+
+      <h3>Follow Up</h3>
+      <p>Continue the conversation in the same thread. The bot remembers the full context of the discussion, so you can ask follow-up questions, refine your query, or dig deeper without repeating yourself.</p>
+
+      <h3 id="chat-dm">Chat (Direct Message)</h3>
+      <p>For private conversations, open the Chat tab (click the bot's name, then "Chat"). First, choose a persona — each one is tuned for a different area with its own knowledge sources.</p>
+      <ul>
+        <li>Click the pencil-on-paper icon at the top of the Chat tab to start a new chat.</li>
+        <li>Pick a persona and accept the disclaimer.</li>
+        <li>Start chatting — just type your question, no @-mention required.</li>
+      </ul>
+      <p>Your persona selection is saved and persists across sessions. You can change it at any time from the bot's Home tab in Slack.</p>
+
+      <h3 id="thinking-effort">Thinking Effort</h3>
+      <p>When selecting a persona for direct messaging, you can also set a thinking effort level (low, medium, high, or max). Higher effort means the bot spends more time reasoning before answering — useful for complex questions. Lower effort gives faster, lighter responses for simple lookups. The default is high.</p>
+      <p>You can also ask the bot to change its effort mid-conversation (e.g. "switch to max effort for this next question") and it will adjust on the fly.</p>
+
+      <h3>Quick Reference</h3>
+      <table>
+        <thead><tr><th>Command</th><th>What It Does</th></tr></thead>
+        <tbody>
+          <tr><td><code>@chai-bot /consent</code></td><td>Opt in to message processing</td></tr>
+          <tr><td><code>@chai-bot /forget</code></td><td>Revoke consent and delete your feedback data</td></tr>
+          <tr><td><code>@chai-bot /data-request</code></td><td>Export your stored data as a CSV</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Try It Out -->
+    <section id="try-it-out">
+      <h2>Try It Out</h2>
+      <p>Want to see Chai Bot in action? Head over to a channel where the bot is active and try asking some questions. Here are a few ideas:</p>
+      <table>
+        <thead><tr><th>Goal</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td>Learn about history and architecture</td><td><code>@chai-bot What is the history of iptables in OpenShift?</code></td></tr>
+          <tr><td>Understand processes</td><td><code>@chai-bot How are errata advisories created for an OpenShift release?</code></td></tr>
+          <tr><td>Get insights from past discussions</td><td><code>@chai-bot What has the team said about the migration to CGroupsV2?</code></td></tr>
+          <tr><td>Find documentation</td><td><code>@chai-bot Where can I find the runbook for node scaling?</code></td></tr>
+          <tr><td>Check current status</td><td><code>@chai-bot Is there anything degraded on the status dashboard?</code></td></tr>
+          <tr><td>Teach the bot something new</td><td><code>@chai-bot please remember that when triaging CI failures, always check pod events for OOMKilled first</code></td></tr>
+        </tbody>
+      </table>
+      <p>Remember to run <code>@chai-bot /consent</code> first if you haven't already. Then just start a thread and ask away!</p>
+    </section>
+
+    <!-- Capabilities -->
+    <section id="capabilities">
+      <h2>What Can It Do?</h2>
+      <p>Chai Bot is focused on helping you find answers and learn from your team's collective knowledge. Here's what it can do:</p>
+
+      <h3>Answer Questions from Your Team's Knowledge Base</h3>
+      <p>The bot draws on dedicated, continuously updated knowledge bases built from real content — Slack conversations, documentation, and web pages. Content is semantically indexed so the bot understands meaning, not just exact matches. When you ask a question, the bot searches multiple knowledge bases in parallel, applies metadata filters, and synthesizes the results into a single coherent answer.</p>
+
+      <h3>Search Past Discussions</h3>
+      <p>The bot can find relevant conversations from your team's Slack history. This is especially useful for questions like "has anyone run into this before?" or "what was the resolution when X happened last month?"</p>
+
+      <h3>Check Infrastructure Status</h3>
+      <p>See what's healthy or degraded on the status dashboard. The bot can report active outages, component health, and sub-component details.</p>
+
+      <h3>Fetch Web Content</h3>
+      <p>Pull information from trusted web domains on demand — useful for checking documentation, reports, or reference pages.</p>
+
+      <h3>Check Release Status</h3>
+      <p>Query release streams to see accepted and rejected payloads, verification job results, and upgrade history across architectures.</p>
+    </section>
+
+    <!-- Feedback and Teaching -->
+    <section id="feedback">
+      <h2>Providing Feedback and Teaching the Bot</h2>
+
+      <h3>Feedback: Helping Track Trends</h3>
+      <p>Your feedback helps the team track how well the bot is performing over time. Feedback helps identify areas that need improvement.</p>
+
+      <h4>Quick Feedback</h4>
+      <p>React to any bot message with a thumbs-up or thumbs-down emoji to signal whether the response was helpful.</p>
+
+      <h4>Detailed Feedback</h4>
+      <p>For more context, mention the bot with your feedback:</p>
+      <pre><code>@chai-bot feedback: The response about CI failures could be improved by...</code></pre>
+
+      <img src="assets/feedback-loop.png" alt="Diagram showing the feedback and learning loop — teach, review, approve, knowledge base grows" class="diagram">
+
+      <h3 id="verified-knowledge">Teaching the Bot: Verified Knowledge</h3>
+      <p>You can directly improve the bot's answers by teaching it lessons. If you know a better answer or want to share process guidance, just tell the bot in natural language:</p>
+      <pre><code>@chai-bot please remember that when creating advisories for a z-stream release, always check...</code></pre>
+      <p>The bot automatically detects when you are teaching it something and synthesizes your guidance into a lesson. It shows you a preview with Submit, Edit, and Cancel buttons. Once you submit, the lesson is posted to a review channel where your peers can approve or reject it.</p>
+      <p>Approved lessons become part of a verified knowledge base. The bot checks verified knowledge first — before searching historical datastores. This means peer-approved guidance takes priority over older conversations or outdated documentation.</p>
+
+      <h4>Newer Lessons Win</h4>
+      <p>When multiple verified lessons address the same topic but contradict each other, the bot trusts the newer lesson. You can correct outdated lessons simply by submitting a new one.</p>
+
+      <h4>Shared vs. Private Lessons</h4>
+      <p>When a reviewer approves a lesson, they choose how widely it should be shared:</p>
+      <ul>
+        <li><strong>Approve &amp; Share</strong> — the lesson becomes visible across all personas. Use for broadly applicable knowledge.</li>
+        <li><strong>Approve for Persona Only</strong> — the lesson is private to the persona where it was submitted. Use for domain-specific procedures.</li>
+      </ul>
+
+      <h4>Lesson Quality Over Time</h4>
+      <p>The bot monitors lesson quality during normal use. When it encounters a lesson that is outdated or no longer relevant, it can propose removal. Deletion proposals go to a review channel for human approval — the bot cannot delete lessons on its own.</p>
+    </section>
+
+    <!-- Knowledge Sources -->
+    <section id="knowledge-sources">
+      <h2>What Does It Know?</h2>
+      <p>Chai Bot's answers are grounded in actual content. Here are the types of content that can be made available:</p>
+      <table>
+        <thead><tr><th>Content Type</th><th>What It Includes</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Slack Conversations</strong></td><td>Past discussions, troubleshooting threads, decisions, and solutions from team channels</td></tr>
+          <tr><td><strong>Documentation &amp; Runbooks</strong></td><td>Markdown files, guides, and runbooks from repositories</td></tr>
+          <tr><td><strong>Web Pages</strong></td><td>Public documentation, blogs, tutorials, and reference pages</td></tr>
+          <tr><td><strong>Verified Knowledge</strong></td><td>Human-approved lessons submitted by team members</td></tr>
+        </tbody>
+      </table>
+      <p>Each persona has its own curated set of knowledge sources. All sources are synced automatically and kept up to date.</p>
+    </section>
+
+    <!-- Where Available -->
+    <section id="where-available">
+      <h2>Where Is It Available?</h2>
+      <p>Chai Bot is active in specific Slack channels. It responds when you @-mention it in a thread. You can also chat with it via the Chat tab.</p>
+      <p>Different channels may have different knowledge bases. In the Chat tab, the persona you select determines which knowledge is available.</p>
+      <p>To find out if the bot is available in your channel, just try mentioning it. If it's not configured for that channel, it will let you know.</p>
+    </section>
+
+    <!-- Privacy -->
+    <section id="privacy">
+      <h2>Privacy and Data</h2>
+
+      <h3>Consent Is Required</h3>
+      <p>Your messages are <strong>not processed by AI</strong> until you explicitly opt in with <code>@chai-bot /consent</code>. If you haven't consented, your messages are completely ignored — even in threads where the bot is active and other users are interacting with it.</p>
+
+      <h3>Non-Consented Users in Threads</h3>
+      <p>If you're in a thread where the bot is active but you haven't consented, your messages are filtered out. The bot does not see or process them.</p>
+
+      <h3>Revoking Consent</h3>
+      <p><code>@chai-bot /forget</code> revokes your consent and deletes all feedback you've provided. After this, the bot will no longer process your messages.</p>
+
+      <h3>Data Export</h3>
+      <p><code>@chai-bot /data-request</code> exports your stored data as a CSV file delivered to you directly.</p>
+
+      <h3>What Is Stored</h3>
+      <ul>
+        <li><strong>Consent status</strong> — whether you have opted in or out.</li>
+        <li><strong>Session data</strong> — conversation content is stored to maintain context across interactions. Sessions are automatically deleted after 90 days.</li>
+        <li><strong>Feedback metadata</strong> — your feedback text (with user mentions removed), emoji reactions on bot messages, and usage metrics.</li>
+        <li><strong>Submitted lessons</strong> — if you teach the bot a lesson, the synthesized lesson text is stored for review and, if approved, in the knowledge base.</li>
+      </ul>
+
+      <h3>How Session Data Is Used</h3>
+      <p>Session data is used solely to maintain conversation context. Conversation content is not used to train AI models, is not shared outside the system, and is automatically deleted after 90 days.</p>
+
+      <h3>Slack History in Knowledge Bases</h3>
+      <p>Some channels have their Slack conversation history indexed so the bot can search past discussions. Slack handles are automatically anonymized before being incorporated into knowledge bases.</p>
+      <p>If you want your messages excluded from Slack history indexing, you can opt out via a separate form — the opt-out applies to all historical and future content across all channels.</p>
+
+      <h3>Data Access Summary</h3>
+      <table>
+        <thead><tr><th>Context</th><th>Bot Sees Messages?</th><th>Indexed?</th></tr></thead>
+        <tbody>
+          <tr><td>Channels where bot is active</td><td>Yes — from consented users in @-mentioned threads</td><td>Yes — opted-out users excluded</td></tr>
+          <tr><td>Channels where bot is NOT active</td><td>No</td><td>No</td></tr>
+          <tr><td>DMs with Chai Bot</td><td>Yes</td><td>No — never indexed</td></tr>
+          <tr><td>DMs between users</td><td>No</td><td>No</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warning">
+        <strong>Do not enter personal information</strong> into the bot. This includes personal identifiers, personal contact information, or other sensitive personal data. For guidelines on responsible use of AI-generated content, refer to your organization's AI usage policies.
+      </div>
+    </section>
+
+    <!-- Limitations -->
+    <section id="limitations">
+      <h2>Limitations</h2>
+      <ul>
+        <li><strong>Accuracy</strong> — As an AI system, the bot may occasionally produce incorrect or outdated information. Always verify critical details through official documentation or team contacts.</li>
+        <li><strong>Read-only</strong> — The bot answers questions and searches knowledge. It does not create issues, open pull requests, or modify external systems.</li>
+        <li><strong>Thread length</strong> — The bot processes up to 300,000 words per thread. Very long threads may be truncated.</li>
+        <li><strong>Thread-based in channels</strong> — In channels, the bot responds only when @-mentioned in a thread. In the Chat tab, no @-mention is needed.</li>
+        <li><strong>Channel-specific</strong> — The bot only operates in channels where it has been configured.</li>
+      </ul>
+    </section>
+
+    <!-- Contact -->
+    <section id="support">
+      <h2>Contact and Support</h2>
+      <p>For questions, issues, or feedback:</p>
+      <ul>
+        <li>Ask in <strong>#chai-users</strong> on Slack</li>
+        <li>Provide feedback directly to the bot using the methods described above</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<!-- Mobile TOC -->
+<button class="mobile-toc-btn" onclick="toggleMobileToc()" aria-label="Table of contents">&#9776;</button>
+<div class="mobile-toc-overlay" id="mobileTocOverlay" onclick="toggleMobileToc()"></div>
+<div class="mobile-toc-panel" id="mobileTocPanel">
+  <div class="toc-title">On this page</div>
+  <nav class="toc">
+    <a href="#what-is-chai-bot" onclick="toggleMobileToc()">What Is Chai Bot?</a>
+    <a href="#getting-started" onclick="toggleMobileToc()">Getting Started</a>
+    <a href="#try-it-out" onclick="toggleMobileToc()">Try It Out</a>
+    <a href="#capabilities" onclick="toggleMobileToc()">What Can It Do?</a>
+    <a href="#feedback" onclick="toggleMobileToc()">Feedback &amp; Teaching</a>
+    <a href="#knowledge-sources" onclick="toggleMobileToc()">Knowledge Sources</a>
+    <a href="#where-available" onclick="toggleMobileToc()">Where Is It Available?</a>
+    <a href="#privacy" onclick="toggleMobileToc()">Privacy &amp; Data</a>
+    <a href="#limitations" onclick="toggleMobileToc()">Limitations</a>
+    <a href="#support" onclick="toggleMobileToc()">Contact &amp; Support</a>
+  </nav>
+</div>
+
+<footer class="footer">
+  <p><a href="index.html">chai-bot</a> &middot; An agentic system for the software development lifecycle</p>
+</footer>
+
+<script>
+function toggleMobileToc() {
+  document.getElementById('mobileTocOverlay').classList.toggle('active');
+  document.getElementById('mobileTocPanel').classList.toggle('active');
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.sidebar .toc a').forEach(a => a.classList.remove('active'));
+      const link = document.querySelector(`.sidebar .toc a[href="#${entry.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -80% 0px' });
+
+document.querySelectorAll('section[id], h3[id]').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
